@@ -1,26 +1,23 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Collapse from 'react-bootstrap/Collapse';
-import Card from "./Card"
-function Example() {
-  const [open, setOpen] = useState(false);
+import { useContext } from 'react'
+import Button from 'react-bootstrap/Button'
+import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../../context'
 
+function Example({ news }) {
+  const navigate = useNavigate()
+  const { setDetailNews } = useContext(UserContext)
   return (
     <>
       <Button
-        onClick={() => setOpen(!open)}
-        aria-controls="example-collapse-text"
-        aria-expanded={open}
+        onClick={() => {
+          setDetailNews(news)
+          navigate('/details')
+        }}
       >
-        click
+        {news.title.substring(0, 50)}...........
       </Button>
-      <Collapse in={open}>
-        <div id="example-collapse-text">
-			<Card/>
-        </div>
-      </Collapse>
     </>
-  );
+  )
 }
 
-export default Example;
+export default Example
