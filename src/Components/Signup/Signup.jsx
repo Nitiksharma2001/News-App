@@ -1,56 +1,60 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { auth, db } from '../../firebaseFunctions'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import SignupUI from './SignupUI'
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
-const Signup = () => {
-  const navigate = useNavigate()
+import * as React from 'react'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import CssBaseline from '@mui/material/CssBaseline'
+import TextField from '@mui/material/TextField'
+import { Link } from 'react-router-dom'
+import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import Helper  from './Helper'
+const defaultTheme = createTheme()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function Signup() {
+  const { submitSignup } = Helper()
 
-  const submitSignup = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user
-        updateProfile(user, {
-          displayName: name,
-        })
-          .then(() => {
-            setDoc(doc(db, 'users', auth.currentUser.uid), {
-              id: auth.currentUser.uid,
-              name,
-              favouriteNews: [],
-            }).then(() => navigate('/signin'))
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      })
-      .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        console.log(errorCode, errorMessage)
-      })
-  }
   return (
-    <>
-      <div className='signup'>
-        <div>
-          <input type='text' value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div>
-          <input type='text' value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div>
-          <input type='text' value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <button onClick={submitSignup}>Signup</button>
-      </div>
-    </>
+    <ThemeProvider theme={defaultTheme}>
+      <Container component='main' maxWidth='xs'>
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component='h1' variant='h5'>
+            Sign up
+          </Typography>
+          <Box component='form' noValidate onSubmit={(e) => submitSignup(e)} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField required fullWidth id='Name' label='Name' name='name' autoComplete='name' />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField required fullWidth id='email' label='Email Address' name='email' autoComplete='email' />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField required fullWidth name='password' label='Password' type='password' id='password' autoComplete='new-password' />
+              </Grid>
+            </Grid>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
+              Sign Up
+            </Button>
+            <Grid justifyContent='flex-end'>
+              <Link to='/signin'>Already have an account? Sign in</Link>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
   )
 }
-
-export default Signup
